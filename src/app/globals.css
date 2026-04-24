@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdfdfb;
+  --foreground: #6b725c;
+  --accent: #95829b;
+  --accent-hover: #84718a;
+  --accent-soft: #f3eef5;
+  --border-soft: #d9d2dc;
+  --font-heading: var(--font-display), "Cormorant Garamond", "Playfair Display", "Times New Roman", serif;
+  --font-body: var(--font-sans), Inter, Lato, Montserrat, "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+p {
+  line-height: 1.85;
+}
+
+button,
+a[role="button"] {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-fade-in {
+  opacity: 0;
+  animation: heroFadeIn 520ms ease-out forwards;
+}
+
+.hero-fade-in-delay {
+  opacity: 0;
+  animation: heroFadeIn 560ms ease-out 90ms forwards;
+}
