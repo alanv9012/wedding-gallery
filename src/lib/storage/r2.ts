@@ -79,13 +79,14 @@ export async function uploadFileToR2(input: {
 }): Promise<{ fileKey: string; url: string }> {
   const client = getR2Client();
   const { r2BucketName } = getR2Env();
+  const body = input.content instanceof Uint8Array ? input.content : new Uint8Array(input.content);
 
   try {
     await client.send(
       new PutObjectCommand({
         Bucket: r2BucketName,
         Key: input.fileKey,
-        Body: input.content,
+        Body: body,
         ContentType: input.contentType,
       }),
     );
