@@ -1,6 +1,7 @@
 import "server-only";
 import type { Photo } from "@/types";
-import { getSupabaseServerClient, type PhotoRow } from "@/lib/db/supabase";
+import { getSupabaseServerClient } from "@/lib/db/supabase";
+import type { Database, PhotoRow } from "@/types/database";
 
 export type CreatePhotoInput = {
   eventSlug: string;
@@ -41,14 +42,16 @@ export function createPhotoRepository(): PhotoRepository {
 
   return {
     async createPhoto(input: CreatePhotoInput): Promise<Photo> {
+      const insertRow: Database["public"]["Tables"]["photos"]["Insert"] = {
+        event_slug: input.eventSlug,
+        file_key: input.fileKey,
+        url: input.url,
+        approved: input.approved ?? false,
+      };
+
       const { data, error } = await supabase
         .from("photos")
-        .insert({
-          event_slug: input.eventSlug,
-          file_key: input.fileKey,
-          url: input.url,
-          approved: input.approved ?? false,
-        })
+        .insert(insertRow)
         .select()
         .single();
 
