@@ -4,14 +4,14 @@ import { createAdminModerationService } from "@/lib/services";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { photoId: string } },
+  { params }: { params: Promise<{ photoId: string }> },
 ) {
   const unauthorized = ensureAdminApiAccess(request);
   if (unauthorized) {
     return unauthorized;
   }
 
-  const { photoId } = params;
+  const { photoId } = await params;
   const body = (await request.json().catch(() => null)) as { approved?: boolean } | null;
 
   if (typeof body?.approved !== "boolean") {

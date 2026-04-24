@@ -32,7 +32,7 @@ export function useUploadFiles() {
   const [stateById, setStateById] = useState<UploadStateMap>({});
   const [isUploading, setIsUploading] = useState(false);
   const [flowStatus, setFlowStatus] = useState<UploadFlowStatus>("idle");
-  const [flowMessage, setFlowMessage] = useState(texts.upload.ready);
+  const [flowMessage, setFlowMessage] = useState<string>(texts.upload.ready);
 
   const updateState = (id: string, next: Partial<UploadState>) => {
     setStateById((current) => ({
