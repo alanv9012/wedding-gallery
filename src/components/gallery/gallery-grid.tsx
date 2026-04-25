@@ -65,7 +65,10 @@ export function GalleryGrid({ initialPhotos, initialHasMore, initialNextCursorId
 
     try {
       const cursorQuery = nextCursorId ? `?cursor=${encodeURIComponent(nextCursorId)}` : "";
-      const response = await fetch(`/api/gallery${cursorQuery}`, { method: "GET" });
+      const response = await fetch(`/api/gallery${cursorQuery}`, {
+        method: "GET",
+        cache: "no-store",
+      });
       const data = (await response.json().catch(() => null)) as GalleryApiResponse | null;
 
       if (!response.ok || !data?.success) {

@@ -4,6 +4,8 @@ import { texts } from "@/lib/config/texts";
 import { createGalleryDataService } from "@/lib/services";
 import { HomeGalleryPreview } from "@/components/gallery/home-gallery-preview";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const galleryDataService = createGalleryDataService();
   const { photos } = await galleryDataService.getApprovedPhotosPage({ pageSize: 6 });

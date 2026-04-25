@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { createGalleryDataService } from "@/lib/services";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const noStoreHeaders = {
+  "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+};
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -11,13 +18,16 @@ export async function GET(request: Request) {
     const galleryDataService = createGalleryDataService();
     const result = await galleryDataService.getApprovedPhotosPage({ cursor: safeCursor });
 
-    return NextResponse.json({
-      success: true,
-      photos: result.photos,
-      hasMore: result.hasMore,
-      nextCursorId: result.nextCursorId,
-      error: null,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        photos: result.photos,
+        hasMore: result.hasMore,
+        nextCursorId: result.nextCursorId,
+        error: null,
+      },
+      { headers: noStoreHeaders },
+    );
   } catch {
     return NextResponse.json(
       {
@@ -27,7 +37,7 @@ export async function GET(request: Request) {
         nextCursorId: null,
         error: "Unable to load gallery photos right now.",
       },
-      { status: 500 },
+      { status: 500, headers: noStoreHeaders },
     );
   }
 }
