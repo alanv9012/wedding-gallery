@@ -18,6 +18,7 @@ export type GalleryPageResult = {
 type GalleryDataServiceDependencies = {
   photoRepository?: PhotoRepository;
 };
+const shouldLogGalleryDebug = process.env.NODE_ENV !== "production" || process.env.UPLOAD_DEBUG === "true";
 
 export function createGalleryDataService(dependencies?: GalleryDataServiceDependencies) {
   const photoRepository = dependencies?.photoRepository ?? createPhotoRepository();
@@ -33,6 +34,15 @@ export function createGalleryDataService(dependencies?: GalleryDataServiceDepend
         offset: safeOffset,
         limit: pageSize + 1,
       });
+
+      if (shouldLogGalleryDebug) {
+        console.info("[gallery-data] Approved photos page", {
+          event_slug: eventConfig.activeEventSlug,
+          requestedOffset: safeOffset,
+          requestedPageSize: pageSize,
+          returnedCount: photos.length,
+        });
+      }
 
       const hasMore = photos.length > pageSize;
       const pagedPhotos = hasMore ? photos.slice(0, pageSize) : photos;

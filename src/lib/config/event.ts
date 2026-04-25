@@ -6,10 +6,10 @@ export type EventConfig = {
 };
 
 export const eventConfig: EventConfig = {
-  activeEventSlug: "Angelica-y-Roberto-2026",
+  activeEventSlug: "angelica-y-roberto-2026",
   activeEvent: {
     id: "event-current",
-    slug: "Angelica-y-Roberto-2026",
+    slug: "angelica-y-roberto-2026",
     title: "Dia de boda",
     date: "Sabado, 25 de abril, 2026",
     welcomeMessage:

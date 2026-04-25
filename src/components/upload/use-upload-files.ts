@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { texts } from "@/lib/config/texts";
 import { uploadFileToApi } from "@/lib/services/upload-api-client";
+import { optimizeImageFile } from "@/lib/utils/image-optimizer";
+import { validateImageUploadFile } from "@/lib/validators/image-upload";
 
 export type UploadState = {
   status: "idle" | "uploading" | "success" | "error";
@@ -52,8 +54,38 @@ export function useUploadFiles() {
     }
 
     setFlowStatus("validating");
-    setFlowMessage(texts.upload.validatingFiles);
+    setFlowMessage(texts.upload.optimizing);
     await Promise.resolve();
+
+    const optimizationResults = await Promise.all(
+      items.map(async (item) => {
+        const optimized = await optimizeImageFile(item.file);
+        const optimizedValidationError = validateImageUploadFile(optimized.file);
+        const fallbackFile = optimizedValidationError ? item.file : optimized.file;
+        const finalValidationError = validateImageUploadFile(fallbackFile);
+
+        if (process.env.NODE_ENV !== "production") {
+          const originalSizeKb = Math.round(item.file.size / 1024);
+          const optimizedSizeKb = Math.round(optimized.file.size / 1024);
+          const finalSizeKb = Math.round(fallbackFile.size / 1024);
+          const optimizedFormat = optimized.file.type || "unknown";
+          console.info("[upload-optimizer]", {
+            originalSizeKb,
+            optimizedSizeKb,
+            finalSizeKb,
+            optimizedFormat,
+            usedFallback: fallbackFile === item.file && optimized.file !== item.file,
+            warning: optimized.warning,
+          });
+        }
+
+        return {
+          id: item.id,
+          file: fallbackFile,
+          validationError: finalValidationError?.message ?? null,
+        };
+      }),
+    );
 
     setIsUploading(true);
     setFlowStatus("uploading");
@@ -62,7 +94,19 @@ export function useUploadFiles() {
     let successCount = 0;
     let errorCount = 0;
 
-    for (const item of items) {
+    for (const item of optimizationResults) {
+      if (item.validationError) {
+        errorCount += 1;
+        updateState(item.id, {
+          status: "error",
+          progress: 0,
+          error: item.validationError,
+          fileKey: null,
+          url: null,
+        });
+        continue;
+      }
+
       updateState(item.id, {
         status: "uploading",
         progress: 0,

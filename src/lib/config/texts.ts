@@ -29,6 +29,7 @@ export const texts = {
     selectionUpdated: "Tu seleccion se actualizo.",
     chooseAtLeastOne: "Selecciona al menos una imagen antes de subir.",
     validating: "Validando",
+    optimizing: "Optimizando fotos...",
     validatingFiles: "Revisando tus archivos...",
     uploading: "Subiendo",
     uploadingKeepOpen: "Subiendo tus fotos. Mantén esta pagina abierta.",

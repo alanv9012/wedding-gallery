@@ -23,8 +23,16 @@ const uploadService = createUploadService({
   storage: new R2UploadStorage(),
   photoRepository: createPhotoRepository(),
 });
+const shouldLogUploadDebug = process.env.NODE_ENV !== "production" || process.env.UPLOAD_DEBUG === "true";
 
 export async function uploadImagesFromRequest(files: File[]): Promise<UploadRequestResult> {
+  if (shouldLogUploadDebug) {
+    console.info("[upload-request] Using event_slug", {
+      event_slug: eventConfig.activeEventSlug,
+      incomingFileCount: files.length,
+    });
+  }
+
   const result = await uploadService.processUpload({
     eventSlug: eventConfig.activeEventSlug,
     files: await Promise.all(
@@ -36,6 +44,14 @@ export async function uploadImagesFromRequest(files: File[]): Promise<UploadRequ
       })),
     ),
   });
+
+  if (shouldLogUploadDebug) {
+    console.info("[upload-request] Upload result", {
+      event_slug: eventConfig.activeEventSlug,
+      successfulCount: result.successfulUploads.length,
+      failedCount: result.failedUploads.length,
+    });
+  }
 
   return result;
 }
