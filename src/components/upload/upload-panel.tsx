@@ -34,6 +34,7 @@ export function UploadPanel() {
     setFlowStatus,
     setFlowMessage,
   } = useUploadFiles();
+  const isSubmitLocked = isUploading || flowStatus === "validating";
 
   useEffect(() => {
     return () => {
@@ -92,7 +93,7 @@ export function UploadPanel() {
   };
 
   const removeImage = (id: string) => {
-    if (isUploading) {
+    if (isSubmitLocked) {
       return;
     }
 
@@ -109,6 +110,10 @@ export function UploadPanel() {
   };
 
   const handleUpload = async () => {
+    if (isSubmitLocked) {
+      return;
+    }
+
     if (selectedImages.length === 0) {
       setErrors([texts.upload.chooseAtLeastOne]);
       setFlowStatus("error");
@@ -117,7 +122,28 @@ export function UploadPanel() {
     }
 
     setErrors([]);
-    await uploadFiles(selectedImages.map((image) => ({ id: image.id, file: image.file })));
+    const result = await uploadFiles(selectedImages.map((image) => ({ id: image.id, file: image.file })));
+
+    if (result.successIds.length === 0) {
+      return;
+    }
+
+    setSelectedImages((current) => {
+      const successIdSet = new Set(result.successIds);
+      const nextImages: SelectedImage[] = [];
+
+      current.forEach((image) => {
+        if (successIdSet.has(image.id)) {
+          URL.revokeObjectURL(image.previewUrl);
+          clearStateForFile(image.id);
+          return;
+        }
+
+        nextImages.push(image);
+      });
+
+      return nextImages;
+    });
   };
 
   return (
@@ -263,7 +289,7 @@ export function UploadPanel() {
                   <button
                     type="button"
                     onClick={() => removeImage(image.id)}
-                    disabled={isUploading}
+                    disabled={isSubmitLocked}
                     className="mt-2 min-h-11 w-full rounded-full border border-[var(--accent)]/35 px-3 text-sm font-medium text-[var(--foreground)] transition hover:bg-[#f6f1f7] disabled:cursor-not-allowed disabled:opacity-60"
                     aria-label={texts.upload.removeAria(image.file.name)}
                   >
@@ -281,7 +307,7 @@ export function UploadPanel() {
           <button
             type="button"
             onClick={handleUpload}
-            disabled={isUploading}
+            disabled={isSubmitLocked}
             className="inline-flex min-h-14 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-[var(--accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:bg-[#b8abbc]"
             aria-label={texts.upload.uploadButtonAria}
           >

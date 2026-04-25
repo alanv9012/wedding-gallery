@@ -30,6 +30,11 @@ type UploadFileInput = {
   file: File;
 };
 
+type UploadFilesResult = {
+  successIds: string[];
+  failedIds: string[];
+};
+
 export function useUploadFiles() {
   const [stateById, setStateById] = useState<UploadStateMap>({});
   const [isUploading, setIsUploading] = useState(false);
@@ -46,11 +51,11 @@ export function useUploadFiles() {
     }));
   };
 
-  const uploadFiles = async (items: UploadFileInput[]) => {
+  const uploadFiles = async (items: UploadFileInput[]): Promise<UploadFilesResult> => {
     if (items.length === 0 || isUploading) {
       setFlowStatus("error");
       setFlowMessage(texts.upload.chooseAtLeastOne);
-      return;
+      return { successIds: [], failedIds: items.map((item) => item.id) };
     }
 
     setFlowStatus("validating");
@@ -93,10 +98,13 @@ export function useUploadFiles() {
 
     let successCount = 0;
     let errorCount = 0;
+    const successIds: string[] = [];
+    const failedIds: string[] = [];
 
     for (const item of optimizationResults) {
       if (item.validationError) {
         errorCount += 1;
+        failedIds.push(item.id);
         updateState(item.id, {
           status: "error",
           progress: 0,
@@ -119,6 +127,7 @@ export function useUploadFiles() {
 
       if (result.success) {
         successCount += 1;
+        successIds.push(item.id);
         updateState(item.id, {
           status: "success",
           progress: 100,
@@ -128,6 +137,7 @@ export function useUploadFiles() {
         });
       } else {
         errorCount += 1;
+        failedIds.push(item.id);
         updateState(item.id, {
           status: "error",
           progress: 0,
@@ -143,11 +153,12 @@ export function useUploadFiles() {
     if (errorCount === 0) {
       setFlowStatus("success");
       setFlowMessage(texts.upload.flowAllSuccess(successCount));
-      return;
+      return { successIds, failedIds };
     }
 
     setFlowStatus("error");
     setFlowMessage(texts.upload.flowWithIssues(successCount, errorCount));
+    return { successIds, failedIds };
   };
 
   const clearStateForFile = (id: string) => {
