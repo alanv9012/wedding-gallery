@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { texts } from "@/lib/config/texts";
 import { createGalleryDataService } from "@/lib/services";
+import { HomeGalleryPreview } from "@/components/gallery/home-gallery-preview";
 
 export default async function HomePage() {
   const galleryDataService = createGalleryDataService();
@@ -59,23 +60,7 @@ export default async function HomePage() {
         {photos.length === 0 ? (
           <p className="text-sm text-[var(--foreground)]">{texts.landing.latestEmpty}</p>
         ) : (
-          <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
-            {photos.map((photo) => (
-              <li key={photo.id} className="overflow-hidden rounded-lg">
-                <div className="relative aspect-[4/5] w-full">
-                  <Image
-                    src={photo.url}
-                    alt={texts.gallery.photoAlt(photo.fileKey)}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 640px) 48vw, 32vw"
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+          <HomeGalleryPreview photos={photos} />
         )}
       </div>
     </section>

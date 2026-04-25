@@ -69,11 +69,13 @@ export function AdminPhotoList({ photos }: AdminPhotoListProps) {
       const response = await fetch(`/api/admin/photos/${photoId}`, {
         method: "DELETE",
       });
-      const result = (await response.json().catch(() => null)) as { success?: boolean; error?: string } | null;
+      const result = (await response.json().catch(() => null)) as
+        | { success?: boolean; error?: string; message?: string }
+        | null;
 
       if (!response.ok || !result?.success) {
         setFeedbackType("error");
-        setFeedback(result?.error ?? texts.admin.deleteFailed);
+        setFeedback(result?.error ?? result?.message ?? texts.admin.deleteFailed);
         setBusyPhotoId(null);
         return;
       }

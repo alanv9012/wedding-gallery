@@ -92,17 +92,29 @@ export async function DELETE(
       );
     }
 
+    if (result === "db_delete_failed") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "The photo file was removed, but the gallery entry could not be deleted.",
+          error: "The photo file was removed, but the gallery entry could not be deleted.",
+        },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json({
       success: true,
       message: "Photo deleted successfully.",
       error: null,
     });
-  } catch {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to delete photo.";
     return NextResponse.json(
       {
         success: false,
-        message: "Unable to delete photo.",
-        error: "Unable to delete photo.",
+        message,
+        error: message,
       },
       { status: 500 },
     );

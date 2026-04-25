@@ -23,7 +23,7 @@ export interface PhotoRepository {
   getAllPhotos(eventSlug: string): Promise<Photo[]>;
   getPhotoById(photoId: string): Promise<Photo | null>;
   updatePhotoStatus(photoId: string, approved: boolean): Promise<Photo | null>;
-  deletePhoto(photoId: string): Promise<void>;
+  deletePhoto(photoId: string): Promise<boolean>;
 }
 
 function mapPhotoRowToPhoto(row: PhotoRow): Photo {
@@ -143,12 +143,19 @@ export function createPhotoRepository(): PhotoRepository {
       return mapPhotoRowToPhoto(data);
     },
 
-    async deletePhoto(photoId: string): Promise<void> {
-      const { error } = await supabase.from("photos").delete().eq("id", photoId);
+    async deletePhoto(photoId: string): Promise<boolean> {
+      const { data, error } = await supabase
+        .from("photos")
+        .delete()
+        .eq("id", photoId)
+        .select("id")
+        .maybeSingle();
 
       if (error) {
         throw new Error("Unable to delete photo.");
       }
+
+      return Boolean(data?.id);
     },
   };
 }
