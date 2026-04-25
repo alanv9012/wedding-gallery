@@ -121,7 +121,7 @@ export function UploadPanel() {
   };
 
   return (
-    <section className="space-y-7 sm:space-y-8">
+    <section className="space-y-7 pb-24 sm:space-y-8 sm:pb-0">
       <PageIntro
         title={texts.upload.title}
         description={texts.upload.description}
@@ -144,21 +144,32 @@ export function UploadPanel() {
           }
         }}
         onClick={() => inputRef.current?.click()}
-        className={`cursor-pointer rounded-2xl border border-dashed p-9 text-center transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:p-11 ${
+        className={`cursor-pointer rounded-2xl border p-7 text-center transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] sm:p-8 ${
           isDragging
-            ? "border-[var(--accent)]/70 bg-[var(--accent-soft)]/80"
-            : "border-[var(--border-soft)] bg-white/92 hover:border-[var(--accent)]/60 hover:bg-[var(--accent-soft)]/45"
+            ? "border-[var(--accent)]/55 bg-[var(--accent-soft)]/50"
+            : "border-[var(--border-soft)] bg-white/92 hover:bg-[var(--accent-soft)]/28"
         }`}
       >
-        <p className="text-lg tracking-tight text-[var(--foreground)] sm:text-xl">{texts.upload.dropTitle}</p>
-        <p className="mt-2 text-sm text-[var(--foreground)]/95 sm:text-base">{texts.upload.dropSubtitle}</p>
-        <p className="mt-3 text-xs text-[var(--foreground)]/85 sm:text-sm">{texts.upload.dropHint}</p>
+        <p className="text-base tracking-tight text-[var(--foreground)] sm:text-lg">{texts.upload.description}</p>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            inputRef.current?.click();
+          }}
+          className="mt-5 inline-flex min-h-14 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-[var(--accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+          aria-label={texts.upload.inputAria}
+        >
+          {texts.upload.selectPhotos}
+        </button>
         <input
           id="upload-photo-input"
           ref={inputRef}
           type="file"
           accept="image/*"
           multiple
+          capture="environment"
           onChange={onPickerChange}
           className="hidden"
           aria-label={texts.upload.inputAria}
@@ -225,7 +236,7 @@ export function UploadPanel() {
         {selectedImages.length === 0 ? (
           <EmptyState title={texts.upload.emptyTitle} message={texts.upload.emptyMessage} />
         ) : (
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+          <ul className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0">
             {selectedImages.map((image) => {
               const uploadState = uploadStateById[image.id];
               const progress = uploadState?.progress ?? 0;
@@ -234,7 +245,10 @@ export function UploadPanel() {
               const isFileError = uploadState?.status === "error";
 
               return (
-                <li key={image.id} className="rounded-xl bg-white/92 p-2.5 sm:p-3">
+                <li
+                  key={image.id}
+                  className="w-40 shrink-0 snap-start rounded-xl bg-white/92 p-2.5 sm:w-auto sm:shrink sm:p-3"
+                >
                   <div className="relative aspect-square overflow-hidden rounded-xl bg-[#f6f6f4]">
                     <Image
                       src={image.previewUrl}
@@ -276,6 +290,24 @@ export function UploadPanel() {
           </ul>
         )}
       </div>
+
+      {selectedImages.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--border-soft)] bg-white/95 p-3 backdrop-blur sm:hidden">
+          <button
+            type="button"
+            onClick={handleUpload}
+            disabled={isUploading}
+            className="inline-flex min-h-14 w-full items-center justify-center rounded-full border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 text-base font-medium text-white transition duration-300 hover:bg-[var(--accent-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:bg-[#b8abbc]"
+            aria-label={texts.upload.uploadButtonAria}
+          >
+            {flowStatus === "validating"
+              ? texts.upload.validatingButton
+              : isUploading
+                ? texts.upload.uploadingButton
+                : `Subir fotos (${selectedImages.length})`}
+          </button>
+        </div>
+      )}
     </section>
   );
 }
