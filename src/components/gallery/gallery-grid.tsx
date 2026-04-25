@@ -36,6 +36,13 @@ export function GalleryGrid({ initialPhotos, initialHasMore, initialNextCursorId
   );
 
   useEffect(() => {
+    setPhotos(initialPhotos);
+    setHasMore(initialHasMore);
+    setNextCursorId(initialNextCursorId);
+    setLoadMoreError(null);
+  }, [initialPhotos, initialHasMore, initialNextCursorId]);
+
+  useEffect(() => {
     if (!selectedPhotoId) {
       return;
     }

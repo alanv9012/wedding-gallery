@@ -25,6 +25,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--foreground)] decoration-[var(--accent)] decoration-2 underline-offset-4 transition hover:bg-[var(--accent-soft)]"
             >
               {item.label}

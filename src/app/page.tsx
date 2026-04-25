@@ -5,6 +5,8 @@ import { createGalleryDataService } from "@/lib/services";
 import { HomeGalleryPreview } from "@/components/gallery/home-gallery-preview";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export default async function HomePage() {
   const galleryDataService = createGalleryDataService();
@@ -39,6 +41,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/gallery"
+                prefetch={false}
                 className="inline-flex min-h-14 items-center justify-center rounded-full border border-white/85 bg-transparent px-8 py-3 text-base font-medium text-white transition duration-300 hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 {texts.landing.viewGallery}
@@ -53,6 +56,7 @@ export default async function HomePage() {
           <h2 className="text-2xl tracking-tight text-[var(--foreground)] sm:text-3xl">{texts.landing.latestMemories}</h2>
           <Link
             href="/gallery"
+            prefetch={false}
             className="text-sm font-medium text-[var(--accent)] transition hover:text-[var(--accent-hover)]"
           >
             {texts.landing.viewFullGallery}
