@@ -36,4 +36,4 @@ Use this checklist after the wedding event is over.
 
 - Do not run destructive bulk scripts unless you have verified backups.
 - Verify at least one successful restore test from your exported files.
-- check for bugs
+- check for bugs and wait
