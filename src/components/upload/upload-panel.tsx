@@ -169,7 +169,6 @@ export function UploadPanel() {
           type="file"
           accept="image/*"
           multiple
-          capture="environment"
           onChange={onPickerChange}
           className="hidden"
           aria-label={texts.upload.inputAria}
