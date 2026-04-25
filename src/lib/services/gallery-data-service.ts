@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_noStore as noStore } from "next/cache";
 import type { Photo } from "@/types";
 import { eventConfig } from "@/lib/config/event";
 import { galleryConfig } from "@/lib/config/gallery";
@@ -25,9 +26,19 @@ export function createGalleryDataService(dependencies?: GalleryDataServiceDepend
 
   return {
     async getApprovedPhotosPage(request?: GalleryPageRequest): Promise<GalleryPageResult> {
+      noStore();
+
       const pageSize = request?.pageSize ?? galleryConfig.pageSize;
       const cursor = request?.cursor ?? 0;
       const safeOffset = Math.max(0, cursor);
+
+      if (shouldLogGalleryDebug) {
+        console.info("[gallery-data] Fetch called", {
+          event_slug: eventConfig.activeEventSlug,
+          requestedOffset: safeOffset,
+          requestedPageSize: pageSize,
+        });
+      }
 
       const photos = await photoRepository.getApprovedPhotosPage({
         eventSlug: eventConfig.activeEventSlug,
@@ -46,6 +57,7 @@ export function createGalleryDataService(dependencies?: GalleryDataServiceDepend
           requestedPageSize: pageSize,
           queryCount: photos.length,
           returnedCount: pagedPhotos.length,
+          returnedIds: pagedPhotos.map((photo) => photo.id),
         });
       }
 
