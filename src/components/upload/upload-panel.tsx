@@ -218,20 +218,6 @@ export function UploadPanel() {
           {texts.upload.selectedPhotos} ({selectedImages.length})
         </h3>
 
-        <button
-          type="button"
-          onClick={handleUpload}
-          disabled={selectedImages.length === 0 || isUploading}
-          className="inline-flex min-h-14 items-center justify-center rounded-full border border-[var(--accent)]/70 bg-[var(--accent-soft)] px-7 py-3 text-base font-medium text-[var(--foreground)] transition duration-300 hover:bg-[#ece4ef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:bg-[#e8e3ea]"
-          aria-label={texts.upload.uploadButtonAria}
-        >
-          {flowStatus === "validating"
-            ? texts.upload.validatingButton
-            : isUploading
-              ? texts.upload.uploadingButton
-              : texts.upload.uploadButton}
-        </button>
-
         {selectedImages.length === 0 ? (
           <EmptyState title={texts.upload.emptyTitle} message={texts.upload.emptyMessage} />
         ) : (

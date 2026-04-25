@@ -35,18 +35,19 @@ export function createGalleryDataService(dependencies?: GalleryDataServiceDepend
         limit: pageSize + 1,
       });
 
+      const hasMore = photos.length > pageSize;
+      const pagedPhotos = hasMore ? photos.slice(0, pageSize) : photos;
+      const nextCursorId = hasMore ? String(safeOffset + pageSize) : null;
+
       if (shouldLogGalleryDebug) {
         console.info("[gallery-data] Approved photos page", {
           event_slug: eventConfig.activeEventSlug,
           requestedOffset: safeOffset,
           requestedPageSize: pageSize,
-          returnedCount: photos.length,
+          queryCount: photos.length,
+          returnedCount: pagedPhotos.length,
         });
       }
-
-      const hasMore = photos.length > pageSize;
-      const pagedPhotos = hasMore ? photos.slice(0, pageSize) : photos;
-      const nextCursorId = hasMore ? String(safeOffset + pageSize) : null;
 
       return {
         photos: pagedPhotos,
