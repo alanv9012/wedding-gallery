@@ -1,2 +1,5 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export { default } from "../src/app/page";
-export { dynamic, revalidate, fetchCache } from "../src/app/page";
